@@ -102,6 +102,15 @@ class TargetKnowledgeService:
                 "description": "Tags toxins and bilirubin for excretion.",
                 "citation": "Rowland, A., et al. (2013). Expert Opin Drug Metab Toxicol.",
                 "url": "https://pubmed.ncbi.nlm.nih.gov/23215858/"
+            },
+            
+            # Mitochondrial & Oxidative Stress
+            "RTN4IP1": {
+                "category": "Mitochondria & Neuroprotection",
+                "full_name": "Reticulon-4 Interacting Protein 1",
+                "description": "Mitochondrial oxidoreductase that protects against oxidative stress and neuronal degeneration.",
+                "citation": "Delahodde, A., et al. (2017). Brain.",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/28334863/"
             }
         }
 

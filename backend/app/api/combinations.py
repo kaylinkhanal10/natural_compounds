@@ -27,6 +27,12 @@ def combine_herbs(request: CombinationRequest):
         g_service = GraphQueryService()
         try:
              extended = g_service.analyze_combination_expanded(request.herbs)
+             
+             # Enrich with Knowledge Dictionary (for full names)
+             from ..services.target_knowledge import TargetKnowledgeService
+             tk_service = TargetKnowledgeService()
+             extended['target_dictionary'] = tk_service.knowledge_base
+             
              result['extended'] = extended
              
              # Feasibility Logic
@@ -60,7 +66,9 @@ def combine_herbs(request: CombinationRequest):
              result['explanation'] += feasibility_text
              
         except Exception as e:
-             # Log error but don't fail MVP if extended mapping missing
+             # Log error
+             with open("backend_error.log", "w") as f:
+                 f.write(f"Extended analysis failed: {str(e)}")
              print(f"Extended analysis failed: {e}")
         finally:
              g_service.close()

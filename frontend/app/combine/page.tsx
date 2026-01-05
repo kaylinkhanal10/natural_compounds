@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, Label, Cell } from 'recharts';
 import { Loader2 } from 'lucide-react';
+import TargetMatrix from '../../components/TargetMatrix';
 
 export default function Combine() {
     const [herbs, setHerbs] = useState<any[]>([]);
@@ -101,11 +102,14 @@ export default function Combine() {
                         Scores reflect overlap and complementarity in protein associations, not efficacy.
                     </p>
                     <p><b>Shared Targets:</b> {result.extended.shared_targets.length}</p>
-                    <ul>
-                        {result.extended.shared_targets.map((t: any, i: number) => (
-                            <li key={i}>{t.name} (Hit by {t.count} herbs)</li>
-                        ))}
-                    </ul>
+
+                    {/* Matrix Visualization */}
+                    <TargetMatrix
+                        sharedEffects={result.extended.shared_targets}
+                        activeHerbs={herbs.filter(h => selected.includes(h.herbId)).map(h => h.name)}
+                        targetMap={result.extended.target_dictionary}
+                    />
+
                     <p><b>Network Scope:</b> {result.extended.counts.comp_count} compounds targeting {result.extended.counts.prot_count} proteins.</p>
                 </div>
             )}
@@ -174,6 +178,42 @@ export default function Combine() {
                     <p style={{ fontSize: '0.8em', marginTop: '10px', fontStyle: 'italic' }}>
                         * Points colored <span style={{ color: 'red' }}>Red</span> violate one or more bioavailability rules.
                     </p>
+
+                    {/* Structure Gallery */}
+                    <div style={{ marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
+                        <h3>Key Compound Structures (2D)</h3>
+                        <div style={{ display: 'flex', overflowX: 'auto', gap: '1rem', padding: '1rem 0' }}>
+                            {result.extended.chemical_feasibility
+                                .filter((c: any) => c.inchikey) // Only if InschKey exists
+                                .slice(0, 30) // Limit to 30 to prevent lag
+                                .map((c: any, i: number) => (
+                                    <div key={i} style={{
+                                        minWidth: '180px',
+                                        border: '1px solid #e2e8f0',
+                                        borderRadius: '8px',
+                                        padding: '10px',
+                                        backgroundColor: 'white',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center'
+                                    }}>
+                                        <div style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+                                            <img
+                                                src={`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/${c.inchikey}/PNG?record_type=2d&image_size=300x300`}
+                                                alt={c.name}
+                                                style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                                            <p style={{ fontWeight: 'bold', fontSize: '0.8rem', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>{c.name}</p>
+                                            <p style={{ fontSize: '0.7rem', color: '#64748b', margin: 0 }}>from {c.herb}</p>
+                                            <p style={{ fontSize: '0.65rem', color: '#94a3b8', margin: '4px 0 0 0', fontFamily: 'monospace' }}>M.W. {Math.round(c.mw)}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

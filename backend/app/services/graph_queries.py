@@ -164,9 +164,10 @@ class GraphQueryService:
         MATCH (hm:HerbMaterial) 
         WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
         MATCH (hm)-[:HAS_COMPOUND]->(c:Compound)-[:TARGETS]->(p:Protein)
-        WITH p, count(DISTINCT hm) as h_count
+        WITH p, count(DISTINCT hm) as h_count, collect(DISTINCT h.name) as sources
         WHERE h_count > 1
-        RETURN p.name as name, h_count as count
+        RETURN p.name as name, h_count as count, sources
+        ORDER BY count DESC
         """
         
         q_union = """
@@ -194,7 +195,7 @@ class GraphQueryService:
              MATCH (hm:HerbMaterial) 
              WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
              MATCH (hm)-[:HAS_COMPOUND]->(c:Compound)
-             RETURN DISTINCT c.name as name, c.mw as mw, c.tpsa as tpsa, c.logp as logp, h.name as herb
+             RETURN DISTINCT c.name as name, c.mw as mw, c.tpsa as tpsa, c.logp as logp, h.name as herb, c.inchikey as inchikey
              """
              feas_res = session.run(q_feasibility, herbs=herbs, map=HERB_NAME_MAP)
              feasibility = [r.data() for r in feas_res]
