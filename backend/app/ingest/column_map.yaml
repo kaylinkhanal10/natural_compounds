@@ -1,0 +1,65 @@
+files:
+  chemical_property:
+    filename: "chemical_property.xlsx"
+    columns:
+      ID: "source_id"
+      INCHIKEY: "inchikey"
+      INCHI: "inchi"
+      SMILES: "smiles"
+      CID: "cid"
+      FORMULA: "formula"
+      MW: "mw"
+      EXACT_MW: "exact_mw"
+      LOGP: "logp"
+      TPSA: "tpsa"
+      HBA: "hba"
+      HBD: "hbd"
+      ROTB: "rotb"
+      ATOM: "atom_count"
+      NRING: "nring"
+      NROM: "nrom"
+      
+  chemical_protein:
+    filename: "chemical_protein.xlsx"
+    columns:
+      ID: "compound_id"
+      PROTEINID: "protein_id"
+      PREFERRED_NAME: "protein_name"
+      SOURCE: "source"
+      SCORE: "score"
+
+  protein_disease:
+    filename: "protein_disease.xlsx"
+    columns:
+      PROTEIN_ID: "protein_id"
+      DISEASEID: "disease_id"
+      DISEASENAME: "disease_name"
+      SCORE: "score"
+
+  medicinal_compound:
+    filename: "medicinal_compound.xlsx"
+    columns:
+      LATIN: "herb_latin"
+      ID: "compound_id"
+      COMPOUND: "compound_name"
+
+  medicinal_material:
+    filename: "medicinal_material.xlsx"
+    columns:
+      LATIN: "latin_name"
+      COMMON: "common_name"
+      CHINESE: "chinese_name"
+      KOREAN: "korean_name"
+      PINYIN: "pinyin"
+
+  prescription:
+    filename: "prescription.xlsx"
+    columns:
+      ENGLISH: "formula_name"
+      LATIN: "ingredient_latin"
+      DOSAGE: "dosage"
+      UNIT: "unit"
+      SEQ: "seq"
+      PROCESS: "process"
+      TEXTBOOK: "source_book"
+      PAGE: "source_page"

@@ -1,0 +1,24 @@
+data:
+  raw_dir: 'raw_data'
+  batch_size: 256
+  num_workers: 4
+
+model:
+  latent_dim: 32
+  hidden_chem: 128
+  hidden_prot: 128
+
+train:
+  epochs: 100
+  lr: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stop_patience: 10
+  beta_warmup_epochs: 20
+  lambda_chem: 1.0
+  lambda_prot: 1.0
+  save_dir: 'backend/app/ml/world_model/checkpoints'
+
+graph:
+  uri: 'bolt://localhost:7687'
+  user: 'neo4j'
+  password: 'password'

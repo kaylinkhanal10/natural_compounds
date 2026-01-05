@@ -1,0 +1,12 @@
+{
+  "total_rows_read": 22479,
+  "unique_compounds": 22461,
+  "skipped_rows": 0,
+  "resolution_methods": {
+    "INCHIKEY": 22479,
+    "CID": 0,
+    "SMILES": 0,
+    "SOURCE_ID": 0,
+    "UNKNOWN": 0
+  }
+}

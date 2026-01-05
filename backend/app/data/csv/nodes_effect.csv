@@ -1,0 +1,11 @@
+effectId:ID,name,category
+EFF_IMMUNITY,Immunomodulation,Immune System
+EFF_DIGESTION,Digestion Support,Digestive System
+EFF_ANTI_INFLAM,Anti-inflammatory,General
+EFF_ADAPTOGEN,Adaptogenic,Stress/Nervous System
+EFF_COGNITION,Cognitive Enhancement,Nervous System
+EFF_RESPIRATORY,Respiratory Support,Respiratory System
+EFF_DETOX,Detoxification,General
+EFF_SKIN,Skin Health,Integumentary System
+EFF_BIOAVAILABILITY,Bioavailability Enhancement,Metabolism
+EFF_ANTIOXIDANT,Antioxidant,General

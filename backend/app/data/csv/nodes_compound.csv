@@ -1,0 +1,11 @@
+compoundId:ID,name,chemicalClass
+CMP_VIT_C,Ascorbic Acid,Vitamin
+CMP_CURCUMIN,Curcumin,Polyphenol
+CMP_PIPERINE,Piperine,Alkaloid
+CMP_WITHANOLIDE,Withanolide A,Steroidal lactone
+CMP_GINGEROL,6-Gingerol,Phenol
+CMP_EUGENOL,Eugenol,Phenylpropene
+CMP_BACOSIDE,Bacoside A,Saponin
+CMP_GLYCYRRHIZIN,Glycyrrhizin,Saponin
+CMP_BERBERINE,Berberine,Alkaloid
+CMP_AZADIRACHTIN,Azadirachtin,Limonoid

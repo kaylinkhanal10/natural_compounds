@@ -1,0 +1,11 @@
+herbId:ID,name,scientificName,description,sanskritName
+HERB_AMLA,Amla,Phyllanthus emblica,Rich source of Vitamin C and antioxidants.,Amalaki
+HERB_GUDUCHI,Guduchi,Tinospora cordifolia,Immunomodulator and adaptogen.,Giloy
+HERB_ASHWAGANDHA,Ashwagandha,Withania somnifera,Potent adaptogen for stress and vitality.,Ashwagandha
+HERB_TURMERIC,Turmeric,Curcuma longa,Anti-inflammatory and antioxidant powerhouse.,Haridra
+HERB_GINGER,Ginger,Zingiber officinale,Digestive aid and anti-inflammatory.,Shunti
+HERB_TULSI,Tulsi,Ocimum sanctum,Sacred basil, adaptogenic and antimicrobial.,Tulasi
+HERB_NEEM,Neem,Azadirachta indica,Blood purifier and antimicrobial.,Nimba
+HERB_BRAHMI,Brahmi,Bacopa monnieri,Cognitive enhancer and nervine tonic.,Brahmi
+HERB_PIPPALI,Pippali,Piper longum,Bioavailability enhancer and respiratory support.,Pippali
+HERB_LICORICE,Licorice,Glycyrrhiza glabra,Soothing for throat and stomach, adrenal support.,Yashtimadhu
