@@ -46,3 +46,6 @@ backend/app/ml/world_model/checkpoints/
 !backend/app/ml/world_model/checkpoints/metrics.json
 !backend/app/ml/world_model/checkpoints/metrics.csv
 !backend/app/ml/world_model/checkpoints/.gitkeep
+
+# Data
+backend/app/data/
