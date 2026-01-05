@@ -13,7 +13,6 @@ safety:
 model:
   latent_dim: 32
   hidden_chem: 128
-  hidden_prot: 128
 
 train:
   epochs: 100
@@ -22,7 +21,6 @@ train:
   early_stop_patience: 10
   beta_warmup_epochs: 50
   lambda_chem: 1.0
-  lambda_prot: 0.4
   save_dir: 'backend/app/ml/world_model/checkpoints'
 
 graph:

@@ -15,17 +15,12 @@ class MMVAEDataset(Dataset):
         self.chem_df = pd.read_excel(chem_path)
         self.chem_df.columns = self.chem_df.columns.str.lower()
         
-        # Load protein data
-        prot_path = os.path.join(data_dir, 'chemical_protein.xlsx')
-        self.prot_df = pd.read_excel(prot_path)
-        self.prot_df.columns = self.prot_df.columns.str.lower()
         
         # Resolve compounds (strict deduplication)
         self._resolve_identities()
         
         # Build features
         self._build_chemical_features()
-        self._build_protein_features()
         
         # Split data
         self._split_data()
@@ -33,7 +28,6 @@ class MMVAEDataset(Dataset):
         # Save feature metadata for inference
         self.feature_metadata = {
             'chem_cols': self.chem_feature_cols,
-            'prot_vocab': self.protein_vocab,
             'chem_mean': self.chem_mean,
             'chem_std': self.chem_std
         }
@@ -88,70 +82,7 @@ class MMVAEDataset(Dataset):
         
         self.X_chem = X.values.astype(np.float32)
         
-    def _build_protein_features(self):
-        # Build multi-hot vectors
-        # Map inchikey -> list of protein IDs
         
-        # Assuming prot_df has keys linking to compounds. Column map needed?
-        # Let's inspect column map or assume standard keys if not provided.
-        # Based on previous context, 'inchikey' or 'compound_id' links them.
-        
-        # Let's assume 'inchikey' exists in prot_df or we link via 'compound_id'
-        # Fallback: strict mapping via 'compound_id' if inchikey missing in protein file
-        
-        # Unique proteins
-        if 'protein_id' in self.prot_df.columns:
-            prot_col = 'protein_id'
-        elif 'proteinid' in self.prot_df.columns:
-            prot_col = 'proteinid'
-        else:
-            prot_col = 'target_id' # adjust as needed
-            
-        # Get unique proteins sorted
-        self.protein_vocab = sorted(self.prot_df[prot_col].unique().astype(str))
-        self.prot_to_idx = {p: i for i, p in enumerate(self.protein_vocab)}
-        
-        num_compounds = len(self.compound_ids)
-        num_proteins = len(self.protein_vocab)
-        self.X_prot = np.zeros((num_compounds, num_proteins), dtype=np.float32)
-        
-        # Group proteins by compound
-        # We need a link. If protein file has 'compound_id' and chem file has 'source_id'/'compound_id'
-        # We use the map built in ingestion. 
-        # For this standalone module, we might rely on 'compound_id' present in both.
-        
-        # Optimization: Create map structure 
-        # compound_id (or inchikey) -> [prot_idx]
-        
-        # Check alignment:
-        # Chem df: inchikey, compound_id
-        # Prot df: compound_id (likely)
-        
-        # Allow linking logic:
-        # Map Prot `compound_id` -> Chem `inchikey` using Chem DF lookup
-        # Check available columns for ID
-        if 'compound_id' in self.chem_df.columns:
-            id_col = 'compound_id'
-        elif 'id' in self.chem_df.columns:
-            id_col = 'id'
-        else:
-            id_col = 'source_id' # fallback
-            
-        cid_to_inchi = pd.Series(self.chem_df['inchikey'].values, index=self.chem_df[id_col].values).to_dict()
-        
-        valid_links = 0
-        for _, row in self.prot_df.iterrows():
-            cid = row.get('compound_id')
-            pid = str(row.get(prot_col))
-            
-            if cid in cid_to_inchi:
-                 inchi = cid_to_inchi[cid]
-                 if inchi in self.id_to_idx and pid in self.prot_to_idx:
-                     c_idx = self.id_to_idx[inchi]
-                     p_idx = self.prot_to_idx[pid]
-                     self.X_prot[c_idx, p_idx] = 1.0
-                     valid_links += 1
-                         
     def _split_data(self):
         # 80/10/10
         N = len(self.X_chem)
@@ -180,6 +111,5 @@ class MMVAEDataset(Dataset):
             real_idx = self.test_idx[idx]
             
         x_chem = torch.tensor(self.X_chem[real_idx])
-        x_prot = torch.tensor(self.X_prot[real_idx])
-        return x_chem, x_prot
+        return x_chem
 

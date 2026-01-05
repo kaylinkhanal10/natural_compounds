@@ -20,7 +20,7 @@ class ReasoningEngine:
         
         # 3. VAE Synergy Analysis (AI Logic)
         vae_analysis = None
-        if self.vae and len(herb_ids) == 2:
+        if self.vae and len(herb_ids) >= 2:
             try:
                 # Fetch compounds for the two herbs
                 # We need a db method for this, or run a quick custom query here? 
@@ -51,12 +51,35 @@ class ReasoningEngine:
                         res = s.run(q, hid=hid, map=HERB_NAME_MAP).single()
                         return res['inchikeys'] if res else []
                 
-                comps_a = get_compounds(herb_ids[0])
-                comps_b = get_compounds(herb_ids[1])
+                all_compound_lists = [get_compounds(hid) for hid in herb_ids]
+                
+                # For N > 2, split into two groups to measure "spread" or "complementarity" of the total mix
+                # Group A: First half, Group B: Second half
+                mid = len(all_compound_lists) // 2
+                comps_a = [item for sublist in all_compound_lists[:mid] for item in sublist]
+                comps_b = [item for sublist in all_compound_lists[mid:] for item in sublist]
                 
                 metric = self.vae.compare_herb_profiles(comps_a, comps_b)
                 if metric:
                     vae_analysis = metric
+                    
+                    # Synergy Score Calculation (Neuro-Symbolic Fusion)
+                    # Score = alpha * ChemicalDistance + beta * TargetCoverage - gamma * Redundancy
+                    # alpha=1.0, beta=0.1 (scale down count), gamma=0.5
+                    chem_dist = metric['centroid_distance']
+                    target_coverage = len(shared_effects) if shared_effects else 0
+                    
+                    # Redundancy: approximated by chemical similarity (1 - distance)
+                    # We could also use biological Jaccard if we had full target sets here
+                    redundancy = 1.0 - chem_dist
+                    
+                    score = (1.0 * chem_dist) + (0.1 * target_coverage) - (0.5 * redundancy)
+                    vae_analysis['synergy_score'] = round(score, 3)
+                    vae_analysis['score_components'] = {
+                        'chemical_distance': round(chem_dist, 3),
+                        'target_coverage': target_coverage,
+                        'redundancy_penalty': round(redundancy, 3)
+                    }
             except Exception as e:
                 print(f"VAE Analysis failed: {e}")
         
@@ -76,6 +99,10 @@ class ReasoningEngine:
         if vae_analysis:
             explanation.append("\nAI World Model Analysis:")
             dist = vae_analysis['centroid_distance']
+            score = vae_analysis.get('synergy_score', 0)
+            
+            explanation.append(f"**Synergy Score: {score}**")
+            
             if dist < 0.2:
                 explanation.append(f"- High Redundancy (Distance {dist:.2f}): These herbs occupy very similar biological space.")
             elif dist > 0.5:

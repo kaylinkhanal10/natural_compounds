@@ -17,7 +17,7 @@ env/
 
 # Node.js / Next.js
 node_modules/
-/.next/
+.next/
 /out/
 /build/
 .env.local
@@ -35,3 +35,14 @@ yarn-error.log*
 raw_data/
 docker/neo4j/data/
 *.log
+
+# Model Weights & Large Binaries
+*.pt
+*.pth
+*.bin
+*.onnx
+embeddings.csv
+backend/app/ml/world_model/checkpoints/
+!backend/app/ml/world_model/checkpoints/metrics.json
+!backend/app/ml/world_model/checkpoints/metrics.csv
+!backend/app/ml/world_model/checkpoints/.gitkeep

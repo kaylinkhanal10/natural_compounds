@@ -5,20 +5,17 @@ This module learns latent representations of natural compounds using a multi-mod
 
 
 1. **Chemical Descriptors** (MW, LogP, TPSA, etc.)
-2. **Protein Targets** (Multi-hot vector of biological targets)
 
 ## Purpose
-This latent space represents the observed chemical–biological manifold of traditional-medicine compounds, not hypothetical drug space.
+This latent space represents the observed chemical manifold of natural-medicine compounds.
 
-The goal is to provide a **continuous, 32-dimensional vector space** where proximity implies both chemical and biological similarity. These embeddings enable:
-- **Similarity Search**: Find compounds chemically and biologically relatable.
-- **Clustering**: Group compounds for exploration.
-- **Diversity Sampling**: Select diverse compounds for screening.
+The goal is to provide a **continuous, 32-dimensional vector space** where proximity implies chemical similarity. 
 
 > **SAFETY NOTICE**: This model is for **representation learning only**.
 > - It does NOT predict efficacy or toxicity.
 > - It does NOT predict binding affinity (IC50/Ki).
 > - It does NOT generate new molecules.
+> - **No biological targets are predicted by the neural model.** All biological claims are grounded in curated knowledge graph paths.
 
 ## Usage
 
@@ -44,19 +41,17 @@ neighbors = service.find_nearest_neighbors('SOME_INCHIKEY_STRING', k=5)
 ### 3. Graph Integration
 Write learned embeddings back to Neo4j (`Compound.embedding` property):
 ```bash
-python3 -m backend.app.ml.world_model.utils
+python3 backend/app/ml/world_model/populate_neo4j_embeddings.py
 ```
 
 ## Architecture
 
-- **Encoders**:
+- **Encoder**:
   - `ChemEncoder`: MLP transforming numeric descriptors.
-  - `ProtEncoder`: MLP transforming sparse target vectors.
-- **Fusion**: Concatenation -> MLP -> Latent Distribution (Gaussian).
-- **Decoders**:
+- **Latent Space**: 32-dimensional Gaussian.
+- **Decoder**:
   - `ChemDecoder`: Reconstructs numeric descriptors (MSE Loss).
-  - `ProtDecoder`: Reconstructs target vector (Weighted BCE Loss).
-- **Loss**: $\mathcal{L} = \lambda_{chem}\mathcal{L}_{MSE} + \lambda_{prot}\mathcal{L}_{BCE} + \beta D_{KL}$
+- **Loss**: $\mathcal{L} = \mathcal{L}_{MSE} + \beta D_{KL}$
 
 ## Outputs
 Embeddings are used only for relative comparison, clustering, and diversity analysis.

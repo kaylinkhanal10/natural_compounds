@@ -27,14 +27,15 @@ class WorldModelInference:
         self.dataset = MMVAEDataset(data_dir=self.config['data']['raw_dir'], config_path=config_path, split='train')
         
         self.chem_dim = self.dataset.X_chem.shape[1]
-        self.prot_dim = self.dataset.X_prot.shape[1]
+        self.chem_dim = self.dataset.X_chem.shape[1]
         
         # Initialize Model
-        self.model = MultiModalVAE(chem_dim=self.chem_dim, prot_dim=self.prot_dim, latent_dim=self.config['model']['latent_dim']).to(self.device)
+        # Initialize Model
+        self.model = MultiModalVAE(chem_dim=self.chem_dim, latent_dim=self.config['model']['latent_dim']).to(self.device)
         
         # Load Checkpoint
         if checkpoint_path is None:
-            checkpoint_path = os.path.join(self.config['train']['save_dir'], 'best_model.pt')
+            checkpoint_path = os.path.join(self.config['train']['save_dir'], 'final_model.pt')
             
         if os.path.exists(checkpoint_path):
             state_dict = torch.load(checkpoint_path, map_location=self.device)
@@ -54,21 +55,16 @@ class WorldModelInference:
         batch_size = 256
         
         # We need to compute for ALL compounds, not just train split
-        # Re-using the full X_chem and X_prot from dataset object
+        # Re-using the full X_chem from dataset object
         X_chem = torch.tensor(self.dataset.X_chem).to(self.device)
-        X_prot = torch.tensor(self.dataset.X_prot).to(self.device)
         
         with torch.no_grad():
             for i in range(0, len(X_chem), batch_size):
                 b_chem = X_chem[i:i+batch_size]
-                b_prot = X_prot[i:i+batch_size]
                 
-                # Encode
+                # Encode (Chemistry Only)
                 h_chem = self.model.chem_encoder(b_chem)
-                h_prot = self.model.prot_encoder(b_prot)
-                h_fused = torch.cat([h_chem, h_prot], dim=1)
-                h_latent = self.model.fusion_net(h_fused)
-                mu = self.model.fc_mu(h_latent)
+                mu = self.model.fc_mu(h_chem)
                 # We use mu (mean) as the deterministic embedding
                 
                 embeddings.append(mu.cpu().numpy())
@@ -81,47 +77,7 @@ class WorldModelInference:
             return self.embeddings[idx]
         return None
 
-    def project_protein_query(self, protein_ids):
-        """
-        Projects a list of target proteins into the VAE latent space.
-        Returns the latent vector (numpy array).
-        """
-        # Create sparse vector
-        x_prot = np.zeros((1, self.prot_dim), dtype=np.float32)
-        valid_prots = 0
-        
-        for pid in protein_ids:
-            if pid in self.dataset.prot_to_idx:
-                idx = self.dataset.prot_to_idx[pid]
-                x_prot[0, idx] = 1.0
-                valid_prots += 1
-                
-        if valid_prots == 0:
-            print("Warning: No valid proteins found in query.")
-            # Return zero vector or None? Returning None is safer.
-            return None
-            
-        x_prot_tensor = torch.tensor(x_prot).to(self.device)
-        
-        with torch.no_grad():
-            # We only have protein data for the query, no chemistry.
-            # Strategy: Pass zero chemistry? Or use fusion net with zero chem embedding?
-            # VAE expects both. We can simulate 'unknown' chemistry as mean (zero vector after normalization)
-            
-            # 1. Encode Protein
-            h_prot = self.model.prot_encoder(x_prot_tensor)
-            
-            # 2. Mock Chemistry (Zero vector of correct shape)
-            # x_chem shape is (1, chem_dim). All zeros -> effectively mean of dataset.
-            x_chem = torch.zeros((1, self.chem_dim), dtype=np.float32).to(self.device)
-            h_chem = self.model.chem_encoder(x_chem)
-            
-            # 3. Fuse
-            h_fused = torch.cat([h_chem, h_prot], dim=1)
-            h_latent = self.model.fusion_net(h_fused)
-            mu = self.model.fc_mu(h_latent)
-            
-            return mu.cpu().numpy().flatten()
+
 
     def find_compounds_by_latent(self, latent_vector, k=10):
         """
