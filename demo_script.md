@@ -8,7 +8,7 @@
    - Show the table with **SMILES**, **MW**, **LogP**.
    - "We now ingest rigorous chemical properties."
 4. Scroll to **Targets & Diseases**.
-   - "This herb targets 15 proteins linked to inflammation."
+   - "This herb is associated with 15 proteins linked to inflammation."
 
 ## 2. Prescription Formulas (New)
 **Action**:
@@ -28,12 +28,12 @@
 3. Analyze.
 4. Show **Mechanistic Synergy**.
    - "They share 3 protein targets (e.g., COX-2)."
-   - "This proves multi-target synergy beyond simple additive effects."
+   - "This suggests multi-target synergy beyond simple additive effects."
 
 ## 4. Disease Network
 **Action**:
 1. Go to "Diseases".
 2. Select a disease (e.g. *Diabetes*).
 3. Show **Associated Targets**.
-4. Show **Potential Treatments**.
+4. Show **Mechanistically Relevant Options**.
    - "These herbs contain compounds that target the same proteins involved in Diabetes."

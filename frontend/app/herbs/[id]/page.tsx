@@ -54,7 +54,7 @@ export default function HerbDetail({ params }: { params: { id: string } }) {
 
             {data.targets && (
                 <div className="card">
-                    <h3>Targets (Proteins)</h3>
+                    <h3>Associated Targets (Proteins)</h3>
                     <ul>{data.targets.map((t: string, i: number) => <li key={i}>{t}</li>)}</ul>
                 </div>
             )}

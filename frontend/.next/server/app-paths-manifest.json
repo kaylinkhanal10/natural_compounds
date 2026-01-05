@@ -1,10 +1,7 @@
 {
-  "/combine/page": "app/combine/page.js",
   "/herbs/page": "app/herbs/page.js",
+  "/combine/page": "app/combine/page.js",
   "/intent/page": "app/intent/page.js",
-  "/diseases/page": "app/diseases/page.js",
-  "/page": "app/page.js",
   "/formulas/page": "app/formulas/page.js",
-  "/formulas/[id]/page": "app/formulas/[id]/page.js",
-  "/diseases/[id]/page": "app/diseases/[id]/page.js"
+  "/diseases/page": "app/diseases/page.js"
 }

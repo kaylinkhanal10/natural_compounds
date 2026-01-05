@@ -18,7 +18,8 @@ class WorldModelInference:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
             
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu') # Forced due to RTX 5090 incompatibility
         
         # Load Dataset Metadata (using Dataset class to ensure consistent feature building)
         # In a production setting, we would load just the JSON metadata.
@@ -80,6 +81,70 @@ class WorldModelInference:
             return self.embeddings[idx]
         return None
 
+    def project_protein_query(self, protein_ids):
+        """
+        Projects a list of target proteins into the VAE latent space.
+        Returns the latent vector (numpy array).
+        """
+        # Create sparse vector
+        x_prot = np.zeros((1, self.prot_dim), dtype=np.float32)
+        valid_prots = 0
+        
+        for pid in protein_ids:
+            if pid in self.dataset.prot_to_idx:
+                idx = self.dataset.prot_to_idx[pid]
+                x_prot[0, idx] = 1.0
+                valid_prots += 1
+                
+        if valid_prots == 0:
+            print("Warning: No valid proteins found in query.")
+            # Return zero vector or None? Returning None is safer.
+            return None
+            
+        x_prot_tensor = torch.tensor(x_prot).to(self.device)
+        
+        with torch.no_grad():
+            # We only have protein data for the query, no chemistry.
+            # Strategy: Pass zero chemistry? Or use fusion net with zero chem embedding?
+            # VAE expects both. We can simulate 'unknown' chemistry as mean (zero vector after normalization)
+            
+            # 1. Encode Protein
+            h_prot = self.model.prot_encoder(x_prot_tensor)
+            
+            # 2. Mock Chemistry (Zero vector of correct shape)
+            # x_chem shape is (1, chem_dim). All zeros -> effectively mean of dataset.
+            x_chem = torch.zeros((1, self.chem_dim), dtype=np.float32).to(self.device)
+            h_chem = self.model.chem_encoder(x_chem)
+            
+            # 3. Fuse
+            h_fused = torch.cat([h_chem, h_prot], dim=1)
+            h_latent = self.model.fusion_net(h_fused)
+            mu = self.model.fc_mu(h_latent)
+            
+            return mu.cpu().numpy().flatten()
+
+    def find_compounds_by_latent(self, latent_vector, k=10):
+        """
+        Finds k nearest compounds to a given latent vector.
+        """
+        if latent_vector is None:
+            return []
+            
+        target = latent_vector.reshape(1, -1)
+        sims = cosine_similarity(target, self.embeddings)[0]
+        
+        indices = np.argsort(sims)[::-1][:k] # Include self/top 1
+        
+        results = []
+        for idx in indices:
+            res = {
+                'inchikey': self.compound_ids[idx],
+                'similarity': float(sims[idx])
+            }
+            results.append(res)
+            
+        return results
+
     def find_nearest_neighbors(self, inchikey, k=10):
         target_emb = self.get_embedding(inchikey)
         if target_emb is None:
@@ -100,6 +165,56 @@ class WorldModelInference:
             results.append(res)
             
         return results
+
+    def compare_herb_profiles(self, compounds_a_ids, compounds_b_ids):
+        """
+        Computes the latent distance between two herbs based on their compound constituents.
+        Returns:
+            - centroid_distance (0.0 to 1.0): Cosine distance between mean vectors.
+            - complementarity_score (0.0 to 1.0): Interpreted score.
+        """
+        # 1. Gather Embeddings
+        emb_a = []
+        for cid in compounds_a_ids:
+            vec = self.get_embedding(cid)
+            if vec is not None:
+                emb_a.append(vec)
+                
+        emb_b = []
+        for cid in compounds_b_ids:
+            vec = self.get_embedding(cid)
+            if vec is not None:
+                emb_b.append(vec)
+                
+        # Handle missing data
+        if not emb_a or not emb_b:
+            return None
+            
+        # 2. Compute Centroids (Mean of all compounds in the herb)
+        # Shape: (latent_dim,)
+        centroid_a = np.mean(np.vstack(emb_a), axis=0)
+        centroid_b = np.mean(np.vstack(emb_b), axis=0)
+        
+        # 3. Compute Cosine Similarity & Distance
+        # Reshape for sklearn: (1, dim)
+        sim = cosine_similarity(centroid_a.reshape(1, -1), centroid_b.reshape(1, -1))[0][0]
+        
+        # Distance = 1 - Similarity (Range: 0 to 2 for cosine, but usually 0-1 for normalized vectors in positive quadrant)
+        # VAE space is usually centered around 0, so similarity can be negative (-1 to 1).
+        # Distance = (1 - sim) / 2 to normalize to 0-1 range? 
+        # Or just use 1 - sim (0 to 2). larger = more distant.
+        dist = 1.0 - sim # Range [0, 2] usually.
+        
+        # 4. Interpret
+        # If dist is high (> 0.5), they are complementary.
+        # If dist is low (< 0.1), they are redundant.
+        
+        return {
+            "centroid_similarity": float(sim),
+            "centroid_distance": float(dist),
+            "num_compounds_a": len(emb_a),
+            "num_compounds_b": len(emb_b)
+        }
 
     def save_embeddings_to_csv(self, output_path='embeddings.csv'):
         df = pd.DataFrame(self.embeddings)

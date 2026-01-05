@@ -49,7 +49,7 @@ export default function FormulaDetail({ params }: { params: { id: string } }) {
             <div className="card">
                 <h3>Mechanistic Expansion</h3>
                 <p>Compounds Involved: {data.mechanistics?.compounds}</p>
-                <p>Targets Hit: {data.mechanistics?.targets}</p>
+                <p>Associated Targets (Proteins): {data.mechanistics?.targets}</p>
                 <h4>Top Associated Diseases</h4>
                 <ul>
                     {data.mechanistics?.diseases.map((d: string) => <li key={d}>{d}</li>)}
@@ -57,7 +57,19 @@ export default function FormulaDetail({ params }: { params: { id: string } }) {
             </div>
 
             <button className="btn" onClick={() => {
-                const text = JSON.stringify(data, null, 2);
+                const exportData = {
+                    ...data,
+                    disclaimer: {
+                        type: "mechanistic_evidence_only",
+                        claims_excluded: [
+                            "efficacy",
+                            "toxicity",
+                            "binding_affinity",
+                            "clinical_outcomes"
+                        ]
+                    }
+                };
+                const text = JSON.stringify(exportData, null, 2);
                 const blob = new Blob([text], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");

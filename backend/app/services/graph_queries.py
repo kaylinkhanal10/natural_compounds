@@ -125,9 +125,22 @@ class GraphQueryService:
     def analyze_combination_expanded(self, herbs):
         # herbs = list of herb IDs or names
         # Need to Map Phase 1 IDs to Phase 2 HerbMaterials
+        
+        # Explicit Mapping for MVP Herbs
+        HERB_NAME_MAP = {
+            "Curcuma longa": "Curcumae Longae Rhizoma",              # Turmeric
+            "Piper longum": "Piperis Longi Fructus",                 # Pippali
+            "Zingiber officinale": "Zingiberis Rhizoma",             # Ginger
+            "Phyllanthus emblica": "Phyllanthi Fructus",             # Amla
+            "Tinospora cordifolia": "Tinosporae Radix",              # Guduchi
+            "Glycyrrhiza glabra": "Glycyrrhizae Radix Et Rhizoma"    # Licorice
+        }
+
         query = """
         MATCH (h:Herb) WHERE h.herbId IN $herbs
-        MATCH (hm:HerbMaterial) WHERE hm.latin_name = h.scientificName
+        WITH h, $map[h.scientificName] as mapped_name
+        MATCH (hm:HerbMaterial) 
+        WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
         WITH collect(hm) as materials
         UNWIND materials as m
         MATCH (m)-[:HAS_COMPOUND]->(c:Compound)
@@ -147,7 +160,9 @@ class GraphQueryService:
         
         q_shared = """
         MATCH (h:Herb) WHERE h.herbId IN $herbs
-        MATCH (hm:HerbMaterial) WHERE hm.latin_name = h.scientificName
+        WITH h, $map[h.scientificName] as mapped_name
+        MATCH (hm:HerbMaterial) 
+        WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
         MATCH (hm)-[:HAS_COMPOUND]->(c:Compound)-[:TARGETS]->(p:Protein)
         WITH p, count(DISTINCT hm) as h_count
         WHERE h_count > 1
@@ -156,7 +171,9 @@ class GraphQueryService:
         
         q_union = """
         MATCH (h:Herb) WHERE h.herbId IN $herbs
-        MATCH (hm:HerbMaterial) WHERE hm.latin_name = h.scientificName
+        WITH h, $map[h.scientificName] as mapped_name
+        MATCH (hm:HerbMaterial) 
+        WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
         MATCH (hm)-[:HAS_COMPOUND]->(c:Compound)
         OPTIONAL MATCH (c)-[:TARGETS]->(p:Protein)
         OPTIONAL MATCH (p)-[:ASSOCIATED_WITH]->(d:Disease)
@@ -164,20 +181,22 @@ class GraphQueryService:
         """
         
         with self.db.driver.session() as session:
-             shared_res = session.run(q_shared, herbs=herbs)
+             shared_res = session.run(q_shared, herbs=herbs, map=HERB_NAME_MAP)
              shared = [r.data() for r in shared_res]
              
-             union_res = session.run(q_union, herbs=herbs)
+             union_res = session.run(q_union, herbs=herbs, map=HERB_NAME_MAP)
              union = union_res.single().data()
              
              # Fetch compound details for feasibility check
              q_feasibility = """
              MATCH (h:Herb) WHERE h.herbId IN $herbs
-             MATCH (hm:HerbMaterial) WHERE hm.latin_name = h.scientificName
+             WITH h, $map[h.scientificName] as mapped_name
+             MATCH (hm:HerbMaterial) 
+             WHERE hm.latin_name = h.scientificName OR (mapped_name IS NOT NULL AND hm.latin_name = mapped_name)
              MATCH (hm)-[:HAS_COMPOUND]->(c:Compound)
              RETURN DISTINCT c.name as name, c.mw as mw, c.tpsa as tpsa, c.logp as logp, h.name as herb
              """
-             feas_res = session.run(q_feasibility, herbs=herbs)
+             feas_res = session.run(q_feasibility, herbs=herbs, map=HERB_NAME_MAP)
              feasibility = [r.data() for r in feas_res]
              
              return {

@@ -1,10 +1,14 @@
-# Natural Medicine World Model (VAE)
+# Traditional Medicine World Model (TM-MC 2.0)
 
-This module implements a Multi-modal Variational Autoencoder (VAE) to learn a latent representation (embedding) for natural compounds by combining:
+This module learns latent representations of natural compounds using a multi-modal VAE.
+
+
+
 1. **Chemical Descriptors** (MW, LogP, TPSA, etc.)
 2. **Protein Targets** (Multi-hot vector of biological targets)
 
 ## Purpose
+This latent space represents the observed chemical–biological manifold of traditional-medicine compounds, not hypothetical drug space.
 
 The goal is to provide a **continuous, 32-dimensional vector space** where proximity implies both chemical and biological similarity. These embeddings enable:
 - **Similarity Search**: Find compounds chemically and biologically relatable.
@@ -55,5 +59,7 @@ python3 -m backend.app.ml.world_model.utils
 - **Loss**: $\mathcal{L} = \lambda_{chem}\mathcal{L}_{MSE} + \lambda_{prot}\mathcal{L}_{BCE} + \beta D_{KL}$
 
 ## Outputs
+Embeddings are used only for relative comparison, clustering, and diversity analysis.
+
 - **Embeddings**: stored in Neo4j on `Compound` nodes.
 - **Metrics**: Saved to `checkpoints/metrics.json`.

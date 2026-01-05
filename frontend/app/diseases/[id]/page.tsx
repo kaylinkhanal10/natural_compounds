@@ -33,10 +33,15 @@ export default function DiseaseDetail({ params }: { params: { id: string } }) {
             </div>
 
             <div className="card">
-                <h3>Potential Treatments (Herbs)</h3>
+                <h3>Mechanistically Relevant Herbs & Formulas</h3>
+                <p style={{ fontSize: '0.85em', color: '#666', marginBottom: '10px' }}>Ranked based on compound–protein associations reported in disease-related pathways.</p>
                 <ul>
                     {data.related_herbs?.map((h: string, i: number) => <li key={i}>{h}</li>)}
                 </ul>
+            </div>
+
+            <div style={{ marginTop: '2rem', fontSize: '0.8em', color: '#888', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                * Protein–disease associations are literature-derived and do not imply therapeutic efficacy.
             </div>
         </div>
     );
