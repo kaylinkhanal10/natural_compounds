@@ -57,3 +57,30 @@ App: `http://localhost:3000`
 ## 📊 Validation
 The system includes verifyable ingestion pipelines and transparent AI metrics.
 Check `backend/app/ml/world_model/README.md` for the latest training loss curves and reconstruction accuracy ($R^2 > 0.95$).
+
+---
+
+## 🔬 Scientific Core Principles
+
+### 1. Lipinski's Rule of 5 (Bioavailability)
+We filter compounds based on this famous pharmaceutical rule to ensure we recommend **absorbable** medicine, not just "fiber."
+
+> **"If you can't absorb it, it can't heal you."**
+
+*   **MW < 500**: Heavy molecules (like Tannins, MW > 800) often stay in the gut. Small ones (Curcumin, MW 368) can enter the blood.
+*   **LogP < 5**: Too oily? Stuck in fat. Too watery? Won't cross membranes. We look for the "Goldilocks" zone.
+*   **H-Bonds**: Too many sticky atoms prevent passage through cell walls.
+
+**Why it matters**: Herbs like **Tumeric (Curcumin)** pass the MW check but struggle with metabolism. This is why our system checks for "Helper Herbs" (like Black Pepper) to boost bioavailability.
+
+### 2. "Lock and Key" Mechanism (Shared Targets)
+When you see a "Consensus Map" or "Shared Targets" in SynerG, we are calculating the **Biological Overlap**.
+
+*   **The Lock**: The Protein (e.g., **TNF-Alpha**, the inflammation switch).
+*   **The Keys**: The Compounds inside the herbs.
+*   **The Hit**: When a compound fits the protein.
+
+**Interpreting the Score**:
+*   **Many Shared Targets (> 50)**: **Reinforcement**. The herbs are "singing the same song," hitting the same switches. This is powerful but can be redundant.
+*   **Few Shared Targets**: **Complementarity**. One herb stops the fire (Inflammation), the other repairs the wall (Regeneration).
+*   **The Sweet Spot**: We aim for high hits on key disease outcomes (like Inflammation determinants) while maintaining chemical diversity.
