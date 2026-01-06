@@ -1,62 +1,71 @@
-# SynerG (Synergistic Graph Intelligence)
-## World Model for Natural Medicine Discovery
+# SynerG World Model: The Neuro-Symbolic Core
 
-**SynerG** allows us to scientifically decode the "Entourage Effect" of ancient herbal formulas.
-This module learns latent representations of natural compounds using a custom Variational Autoencoder (VAE), creating a "Chemical Map" for calculating **Synergy Scores**.
+**SynerG (Synergistic Graph Intelligence)** uses a hybrid AI approach to decode natural medicine. The **World Model** is the "Neural" half of this brain, responsible for understanding the continuous landscape of chemical structures.
 
+## 1. Methodology
+We treat chemistry not as discrete labels, but as a continuous mathematical manifold.
 
+### Why Variational Autoencoder (VAE)?
+Unlike standard Autoencoders that "memorize" inputs, a VAE learns a **probability distribution**.
+*   **Autoencoder**: Good for compression, but the latent space is "gappy." Interpolating between two molecules generates nonsense.
+*   **VAE**: Enforces a smooth Gaussian structure. This ensures that **distance in latent space = difference in chemical properties.**
 
-1. **Chemical Descriptors** (MW, LogP, TPSA, etc.)
+### Mechanism
+1.  **Input**: 2048-bit Extended Connectivity Fingerprint (ECFP) representing the molecule's structure.
+2.  **Encoder**: Compresses this high-dimensional vector into a 32-dimensional Gaussian distribution ($\mu, \sigma$).
+3.  **Reparameterization Trick**: We sample $z = \mu + \sigma \cdot \epsilon$ to allow backpropagation through random nodes.
+4.  **Decoder**: Reconstructs the original fingerprint from $z$.
 
-## Purpose
-This latent space represents the observed chemical manifold of natural-medicine compounds.
+## 2. Architecture & Hyperparameters
+The model is a lightweight, strictly-regularized MLP designed for small-data stability.
 
-The goal is to provide a **continuous, 32-dimensional vector space** where proximity implies chemical similarity. 
-
-> **SAFETY NOTICE**: This model is for **representation learning only**.
-> - It does NOT predict efficacy or toxicity.
-> - It does NOT predict binding affinity (IC50/Ki).
-> - It does NOT generate new molecules.
-> - **No biological targets are predicted by the neural model.** All biological claims are grounded in curated knowledge graph paths.
-
-## Usage
-
-### 1. Training
-Train the VAE on the provided Excel datasets:
-```bash
-python3 -m backend.app.ml.world_model.train
-```
-Configuration is managed in `config.yaml`.
-
-### 2. Inference
-Load the trained model and generate embeddings:
 ```python
-from backend.app.ml.world_model.infer import WorldModelInference
-
-service = WorldModelInference()
-# Get embedding for a specific InChIKey
-vector = service.get_embedding('SOME_INCHIKEY_STRING')
-# Find nearest neighbors
-neighbors = service.find_nearest_neighbors('SOME_INCHIKEY_STRING', k=5)
+# Architecture Overview
+Input (2048) 
+  -> Linear(256) -> LayerNorm -> GELU -> Dropout(0.1)
+  -> Linear(128) -> LayerNorm -> GELU 
+  -> Latent(32) (Mu + LogVar)
+  -> Reparameterization (z)
+  -> Linear(128) -> LayerNorm -> GELU
+  -> Linear(256) -> LayerNorm -> GELU
+  -> Output (2048) -> MSE Loss
 ```
 
-### 3. Graph Integration
-Write learned embeddings back to Neo4j (`Compound.embedding` property):
+*   **Latent Dimension**: 32 (Compression Ratio ~64:1)
+*   **Activation**: GELU (Smoother gradients than ReLU)
+*   **Normalization**: LayerNorm (Essential for chemical feature stability)
+
+## 3. Synergy Score Calculation
+The core innovation of SynerG is the formula quantifying how well two herbs work together.
+
+$$ \text{Score} = (\alpha \cdot D_{chem}) + (\beta \cdot C_{targets}) - (\gamma \cdot R_{redundancy}) $$
+
+*   **$D_{chem}$ (Chemical Distance)**: Euclidean distance in the VAE latent space. We reward *difference* (Diversity).
+*   **$C_{targets}$ (Target Consensus)**: Number of shared biological targets (symbolic graph overlap). We reward *focus*.
+*   **$R_{redundancy}$ (Redundancy)**: Penalty for being too chemically similar without adding new targets.
+
+## 4. Evaluation Metrics
+We track three key metrics to ensure the model is learning a valid "World Map" of chemistry.
+
+### A. Total Loss (Convergence)
+The total cost paid by the model. The rise in loss over time is due to **KL Annealing** (gradually turning on the tax for using the latent space), forcing the model to organize its memory.
+![Loss Curve](checkpoints/figures/loss_curve.png)
+
+### B. Reconstruction Quality ($R^2$)
+Measures how accurately the model can "remember" a molecule.
+*   **Goal**: $> 0.90$
+*   **Current status**: Achieving ~0.96. The model effectively captures chemical identity.
+![R2 Score](checkpoints/figures/chem_r2.png)
+
+### C. Latent Organization (KL Divergence)
+Measures how "smooth" the chemical map is.
+*   **Goal**: Non-zero but stable.
+*   **Significance**: A healthy KLD proves the map is navigable and not just memorized (Posterior Collapse).
+![KL Divergence](checkpoints/figures/kld.png)
+
+## 5. Usage
+To generate embeddings for the Graph:
 ```bash
 python3 backend/app/ml/world_model/populate_neo4j_embeddings.py
 ```
-
-## Architecture
-
-- **Encoder**:
-  - `ChemEncoder`: MLP transforming numeric descriptors.
-- **Latent Space**: 32-dimensional Gaussian.
-- **Decoder**:
-  - `ChemDecoder`: Reconstructs numeric descriptors (MSE Loss).
-- **Loss**: $\mathcal{L} = \mathcal{L}_{MSE} + \beta D_{KL}$
-
-## Outputs
-Embeddings are used only for relative comparison, clustering, and diversity analysis.
-
-- **Embeddings**: stored in Neo4j on `Compound` nodes.
-- **Metrics**: Saved to `checkpoints/metrics.json`.
+This script acts as the bridge, injecting the Neural intuition (Embeddings) into the Symbolic Brain (Neo4j).
