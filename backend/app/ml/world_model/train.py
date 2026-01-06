@@ -158,6 +158,8 @@ def main():
     
     metrics_history = []
     
+    best_val_r2 = -float('inf')
+    
     for epoch in range(epochs):
         if epoch < warmup:
             beta = epoch / warmup
@@ -184,11 +186,14 @@ def main():
         with open(os.path.join(config['train']['save_dir'], 'metrics.json'), 'w') as f:
             json.dump(metrics_history, f, indent=2)
             
-        # Stopping Logic based on R2 Stability (New robustness check)
-        if val_metrics['test_chem_r2'] > 0.99: 
-             # Early stop if perfect reconstruction (unlikely but possible)
-             pass
+        # Checkpoint: Save BEST model based on R2
+        current_r2 = val_metrics['test_chem_r2']
+        if current_r2 > best_val_r2:
+            best_val_r2 = current_r2
+            torch.save(model.state_dict(), os.path.join(config['train']['save_dir'], 'best_model.pt'))
+            print(f"--> New Best Model (R2: {current_r2:.4f}) Saved.")
             
+        # Always save latest as 'final' just in case
         torch.save(model.state_dict(), os.path.join(config['train']['save_dir'], 'final_model.pt'))
                 
     # Finalize

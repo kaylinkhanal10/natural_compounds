@@ -35,7 +35,7 @@ class WorldModelInference:
         
         # Load Checkpoint
         if checkpoint_path is None:
-            checkpoint_path = os.path.join(self.config['train']['save_dir'], 'final_model.pt')
+            checkpoint_path = os.path.join(self.config['train']['save_dir'], 'best_model.pt')
             
         if os.path.exists(checkpoint_path):
             state_dict = torch.load(checkpoint_path, map_location=self.device)

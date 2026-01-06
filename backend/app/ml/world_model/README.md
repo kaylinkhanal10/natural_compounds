@@ -1,6 +1,8 @@
-# Traditional Medicine World Model (TM-MC 2.0)
+# SynerG (Synergistic Graph Intelligence)
+## World Model for Natural Medicine Discovery
 
-This module learns latent representations of natural compounds using a multi-modal VAE.
+**SynerG** allows us to scientifically decode the "Entourage Effect" of ancient herbal formulas.
+This module learns latent representations of natural compounds using a custom Variational Autoencoder (VAE), creating a "Chemical Map" for calculating **Synergy Scores**.
 
 
 

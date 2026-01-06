@@ -35,7 +35,9 @@ class ReasoningEngine:
                         "Zingiber officinale": "Zingiberis Rhizoma",             # Ginger
                         "Phyllanthus emblica": "Phyllanthi Fructus",             # Amla
                         "Tinospora cordifolia": "Tinosporae Radix",              # Guduchi
-                        "Glycyrrhiza glabra": "Glycyrrhizae Radix Et Rhizoma"    # Licorice
+                        "Glycyrrhiza glabra": "Glycyrrhizae Radix Et Rhizoma",    # Licorice
+                        "Ocimum tenuiflorum": "Ocimi Sancti Herba",              # Tulsi
+                        "Ocimum sanctum": "Ocimi Sancti Herba"                   # Tulsi (Synonym)
                     }
                     
                     q = """
@@ -140,7 +142,9 @@ class ReasoningEngine:
             "Zingiber officinale": "Zingiberis Rhizoma",
             "Phyllanthus emblica": "Phyllanthi Fructus",
             "Tinospora cordifolia": "Tinosporae Radix",
-            "Glycyrrhiza glabra": "Glycyrrhizae Radix Et Rhizoma"
+            "Glycyrrhiza glabra": "Glycyrrhizae Radix Et Rhizoma",
+            "Ocimum tenuiflorum": "Ocimi Sancti Herba",
+            "Ocimum sanctum": "Ocimi Sancti Herba"
         }
 
         with self.db.driver.session() as s:
