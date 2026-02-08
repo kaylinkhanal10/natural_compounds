@@ -1,5 +1,8 @@
 from app.services.neo4j_service import Neo4jService
-from app.ml.world_model.infer_supervised import SupervisedInference
+try:
+    from app.ml.world_model.infer_supervised import SupervisedInference
+except ImportError:
+    SupervisedInference = None
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
