@@ -5,11 +5,12 @@ from ..models.herb import HerbDetail
 router = APIRouter()
 
 @router.get("/", response_model=list)
-def get_herbs():
+def get_herbs(search: str = None):
     db = Neo4jService()
     try:
-        herbs = db.get_all_herbs()
-        return herbs
+        if search:
+            return db.search_herbs(search)
+        return db.get_all_herbs()
     finally:
         db.close()
 

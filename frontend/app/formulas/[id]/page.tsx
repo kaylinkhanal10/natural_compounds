@@ -18,7 +18,7 @@ export default function FormulaDetail({ params }: { params: { id: string } }) {
     if (!data) return <div>Not found</div>;
 
     return (
-        <div>
+        <div className="container">
             <h2>{data.name}</h2>
             <p>Source: {data.source_book}</p>
 

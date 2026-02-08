@@ -11,7 +11,7 @@ class MMVAEDataset(Dataset):
         self.split = split
         
         # Load chemical data
-        chem_path = os.path.join(data_dir, 'chemical_property.xlsx')
+        chem_path = os.path.join(data_dir, 'chembl_36_extracted.xlsx')
         self.chem_df = pd.read_excel(chem_path)
         self.chem_df.columns = self.chem_df.columns.str.lower()
         

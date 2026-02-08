@@ -10,7 +10,7 @@ from .dataset import MMVAEDataset
 from sklearn.metrics.pairwise import cosine_similarity
 
 class WorldModelInference:
-    def __init__(self, config_path='backend/app/ml/world_model/config.yaml', checkpoint_path=None):
+    def __init__(self, config_path='app/ml/world_model/config.yaml', checkpoint_path=None):
         self.config_path = config_path.replace('backend/app/ml/world_model/', '') # Adjust relative if needed
         if os.path.isabs(config_path):
              self.config_path = config_path

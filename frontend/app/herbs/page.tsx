@@ -17,7 +17,7 @@ export default function HerbList() {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div>
+        <div className="container">
             <h2>Herb Explorer</h2>
             <div className="card">
                 <table>

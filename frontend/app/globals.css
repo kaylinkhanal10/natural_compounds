@@ -1,74 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-  --primary: #4f46e5;
-  --secondary: #64748b;
-  --border: #e2e8f0;
+  --background: #09090b;
+  --foreground: #fafafa;
+  /* Keeping minimal variables */
+  --primary: #10b981;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+@layer utilities {
+  .animate-float {
+    animation: float linear infinite;
+  }
 }
 
-.card {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
 
-.btn {
-  background: var(--primary);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-}
+  33% {
+    transform: translate(30px, -50px) rotate(10deg);
+  }
 
-.btn:hover {
-  opacity: 0.9;
-}
+  66% {
+    transform: translate(-20px, 20px) rotate(-5deg);
+  }
 
-.nav {
-  display: flex;
-  gap: 2rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
-}
-
-.nav a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.nav a:hover {
-  color: var(--primary);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  text-align: left;
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
 }

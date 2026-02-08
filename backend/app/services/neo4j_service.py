@@ -15,11 +15,23 @@ class Neo4jService:
         query = """
         MATCH (h:Herb)
         RETURN h.herbId as herbId, h.name as name, h.scientificName as scientificName, 
-               h.description as description, h.sanskritName as sanskritName
+               h.description as description, h.sanskritName as sanskritName, h.pinyin as pinyin
         ORDER BY h.name
         """
         with self.driver.session() as session:
             result = session.run(query)
+            return [record.data() for record in result]
+
+    def search_herbs(self, term: str):
+        query = """
+        MATCH (h:Herb)
+        WHERE toLower(h.name) CONTAINS toLower($term) OR toLower(h.scientificName) CONTAINS toLower($term)
+        RETURN h.herbId as herbId, h.name as name, h.scientificName as scientificName
+        ORDER BY h.name
+        LIMIT 20
+        """
+        with self.driver.session() as session:
+            result = session.run(query, term=term)
             return [record.data() for record in result]
 
     def get_herb_details(self, herb_id: str):

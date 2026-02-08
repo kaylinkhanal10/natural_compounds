@@ -1,0 +1,7 @@
+{
+    "epochs": 5,
+    "batch_size": 32,
+    "data_path": "/mnt/natural_medicine_data/chembl_36/chembl_36_sqlite/chembl_36.db",
+    "limit": 1000,
+    "output_dir": "experiments/exp_001_encoder_training"
+}

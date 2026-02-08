@@ -1,6 +1,6 @@
-# SynerG World Model: The Neuro-Symbolic Core
+# OsadAI World Model: The Neuro-Symbolic Core
 
-**SynerG (Synergistic Graph Intelligence)** uses a hybrid AI approach to decode natural medicine. The **World Model** is the "Neural" half of this brain, responsible for understanding the continuous landscape of chemical structures.
+**OsadAI (Synergistic Graph Intelligence)** uses a hybrid AI approach to decode natural medicine. The **World Model** is the "Neural" half of this brain, responsible for understanding the continuous landscape of chemical structures.
 
 ## 1. Methodology
 We treat chemistry not as discrete labels, but as a continuous mathematical manifold.
@@ -36,7 +36,7 @@ Input (2048)
 *   **Normalization**: LayerNorm (Essential for chemical feature stability)
 
 ## 3. Synergy Score Calculation
-The core innovation of SynerG is the formula quantifying how well two herbs work together.
+The core innovation of OsadAI is the formula quantifying how well two herbs work together.
 
 $$ \text{Score} = (\alpha \cdot D_{chem}) + (\beta \cdot C_{targets}) - (\gamma \cdot R_{redundancy}) $$
 

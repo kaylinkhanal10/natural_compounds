@@ -6,8 +6,9 @@ from ..services.reasoning_engine import ReasoningEngine
 router = APIRouter()
 
 class CombinationRequest(BaseModel):
-    herbs: List[str]
+    herbs: List[str] = []
     compounds: List[str] = []
+    groups: Optional[dict] = None # New: For component-level scoring { "Group Name": [compounds] }
     probiotics: List[str] = []
     minerals: List[str] = []
 
@@ -15,9 +16,16 @@ class CombinationRequest(BaseModel):
 def combine_herbs(request: CombinationRequest):
     engine = ReasoningEngine()
     try:
-        # Currently only supporting herbs logic for MVP
+        # Compound-Level Reasoning (Preferred)
+        if request.groups:
+            score, explanation = engine.score_direct(request.groups)
+            score, explanation = engine.score_direct(request.groups)
+            # The explanation is now the full detailed JSON response requested by the user
+            return explanation
+
+        # Legacy Herb-Level Reasoning
         if not request.herbs:
-             raise HTTPException(status_code=400, detail="At least one herb must be selected.")
+             raise HTTPException(status_code=400, detail="At least one herb or compound group must be selected.")
         
         result = engine.analyze_combination(request.herbs)
         

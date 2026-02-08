@@ -1,13 +1,13 @@
-# SynerG: Synergistic Graph Intelligence (MVP)
+# OsadAI: Synergistic Graph Intelligence (MVP)
 
 > **Scientific Validation for Natural Medicine.**
 
-SynerG is a B2B demo platform that bridges the gap between traditional herbal wisdom and modern pharmacological science. It uses a **Neuro-Symbolic** approach to reason about formulations, interactions, and synergy.
+OsadAI is a B2B demo platform that bridges the gap between traditional herbal wisdom and modern pharmacological science. It uses a **Neuro-Symbolic** approach to reason about formulations, interactions, and synergy.
 
 ---
 
 ## 🧠 The Architecture
-SynerG combines two forms of AI to solve the "Black Box" problem:
+OsadAI combines two forms of AI to solve the "Black Box" problem:
 
 1.  **The Neural Brain (World Model)**: A **Variational Autoencoder (VAE)** that understands the continuous landscape of chemistry. It builds a "map" where distance = difference in properties.
     *   *See [World Model Documentation](backend/app/ml/world_model/README.md) for architecture, plots, and methodology.*
@@ -74,7 +74,7 @@ We filter compounds based on this famous pharmaceutical rule to ensure we recomm
 **Why it matters**: Herbs like **Tumeric (Curcumin)** pass the MW check but struggle with metabolism. This is why our system checks for "Helper Herbs" (like Black Pepper) to boost bioavailability.
 
 ### 2. "Lock and Key" Mechanism (Shared Targets)
-When you see a "Consensus Map" or "Shared Targets" in SynerG, we are calculating the **Biological Overlap**.
+When you see a "Consensus Map" or "Shared Targets" in OsadAI, we are calculating the **Biological Overlap**.
 
 *   **The Lock**: The Protein (e.g., **TNF-Alpha**, the inflammation switch).
 *   **The Keys**: The Compounds inside the herbs.

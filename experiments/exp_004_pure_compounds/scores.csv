@@ -1,0 +1,5 @@
+name,type,score,coherence,redundancy,interpretation
+Curcumin (Baseline),baseline,0.62,1.0,0.0,Moderate Plausibility.
+Curcumin + Piperine (Synergy),synergy_pk,0.032,0.0,0.0,Low Plausibility.
+Curcumin + Quercetin (Coherence),synergy_pd,0.0,0.67,0.66,Redundant. High chemical and biological overlap detected.
+Curcumin + Analog (Redundancy),redundancy,0.0,1.0,1.0,Redundant. High chemical and biological overlap detected.

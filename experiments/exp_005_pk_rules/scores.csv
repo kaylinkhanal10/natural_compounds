@@ -1,0 +1,3 @@
+name,type,score,coherence,pk_boost,interpretation
+Curcumin + Piperine (PK Synergy),pk_synergy,0.159,0.22,0.3,Low Plausibility.
+Curcumin + Dummy (Control),control,0.016,0.0,0,Low Plausibility.

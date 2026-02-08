@@ -17,7 +17,7 @@ export default function FormulaList() {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div>
+        <div className="container">
             <h2>Prescription Formulas</h2>
             <div className="card">
                 <table>

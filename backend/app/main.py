@@ -26,6 +26,15 @@ app.include_router(formulas.router, prefix="/formulas", tags=["Formulas"])
 app.include_router(diseases.router, prefix="/diseases", tags=["Diseases"])
 app.include_router(targets.router, prefix="/targets", tags=["Targets"])
 
+# Global Search
+from .api import search
+app.include_router(search.router, prefix="/search", tags=["Search"])
+
+# New Workspace & Graph Routers
+from .api import workspace, graph
+app.include_router(workspace.router, prefix="/workspaces", tags=["Workspace"])
+app.include_router(graph.router, prefix="/graph", tags=["Graph Visual"])
+
 @app.get("/")
 def read_root():
     return {"message": "Natural Medicine Discovery AI is running."}

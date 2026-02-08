@@ -1,0 +1,5 @@
+name,type,herbs,score,coverage,coherence,redundancy_penalty,compounds_used,targets_hit,interpretation
+Baseline: Turmeric,baseline,HERB_TURMERIC,1.0,1.0,1.0,0.0,20,6517,Highly Plausible. Strong coherence and coverage.
+Turmeric + Pippali,synergy,HERB_TURMERIC|HERB_PIPPALI,0.37899926,1.0,0.02,0.02,40,6553,Low Plausibility.
+"Immunity Triad (Amla, Guduchi, Ashwagandha)",formulation,HERB_AMLA|HERB_GUDUCHI|HERB_ASHWAGANDHA,0.29086298,1.0,0.07,0.1,40,7775,Low Plausibility.
+Random Mix 1,random,HERB_NEEM|HERB_LICORICE,0.4,1.0,0.0,0.0,20,9629,Low Plausibility.

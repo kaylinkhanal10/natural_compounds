@@ -1,25 +1,24 @@
 data:
-  raw_dir: 'raw_data'
-  batch_size: 256
-  num_workers: 4
-  num_workers: 4
+  raw_dir: '/mnt/natural_medicine_data'
+  batch_size: 32
+  num_workers: 0 # Set to 0 for dummy DB to avoid multiprocessing issues with small data? No, 4 is fine.
+  debug_limit: 100
 
 safety:
-  # See manifesto.md for strict epistemic rules
-  allow_prediction: false       # VAE never predicts efficacy
-  allow_generation: false       # VAE never generates new molecules
-  allow_clinical_claims: false  # UI never implies clinical validation
+  allow_prediction: false
+  allow_generation: false
+  allow_clinical_claims: false
 
 model:
   latent_dim: 32
   hidden_chem: 128
 
 train:
-  epochs: 50
+  epochs: 2
   lr: 1.0e-3
   weight_decay: 1.0e-5
   early_stop_patience: 10
-  beta_warmup_epochs: 50
+  beta_warmup_epochs: 5
   lambda_chem: 1.0
   save_dir: 'backend/app/ml/world_model/checkpoints'
 
@@ -27,3 +26,7 @@ graph:
   uri: 'bolt://localhost:7687'
   user: 'neo4j'
   password: 'password'
+# Override DB path logic in code by just placing it where code expects or changing code
+# Code expects: os.path.join(raw_dir, 'chembl_36', 'chembl_36.db')
+# I'll modify code to look for config override or just move dummy to that path?
+# Moving is cleaner.

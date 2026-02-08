@@ -17,7 +17,7 @@ export default function HerbDetail({ params }: { params: { id: string } }) {
     if (!data) return <div>Not found</div>;
 
     return (
-        <div>
+        <div className="container">
             <h2>{data.name} ({data.scientificName})</h2>
             <p><i>{data.sanskritName}</i></p>
             <p>{data.description}</p>

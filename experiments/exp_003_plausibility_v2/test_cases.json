@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Baseline: Turmeric",
+        "herbs": [
+            "HERB_TURMERIC"
+        ],
+        "type": "baseline"
+    },
+    {
+        "name": "Turmeric + Pippali",
+        "herbs": [
+            "HERB_TURMERIC",
+            "HERB_PIPPALI"
+        ],
+        "type": "synergy"
+    },
+    {
+        "name": "Turmeric + Ginger",
+        "herbs": [
+            "HERB_TURMERIC",
+            "HERB_GINGER"
+        ],
+        "type": "redundancy_check"
+    },
+    {
+        "name": "Immunity Triad (Amla, Guduchi, Ashwagandha)",
+        "herbs": [
+            "HERB_AMLA",
+            "HERB_GUDUCHI",
+            "HERB_ASHWAGANDHA"
+        ],
+        "type": "formulation"
+    },
+    {
+        "name": "Random Mix 1",
+        "herbs": [
+            "HERB_NEEM",
+            "HERB_LICORICE"
+        ],
+        "type": "random"
+    },
+    {
+        "name": "Random Mix 2",
+        "herbs": [
+            "HERB_BRAHMI",
+            "HERB_TULSI"
+        ],
+        "type": "random"
+    }
+]

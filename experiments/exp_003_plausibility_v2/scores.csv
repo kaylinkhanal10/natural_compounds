@@ -1,0 +1,7 @@
+name,type,herbs,score,coverage,coherence,redundancy_penalty,risk_penalty,interpretation
+Baseline: Turmeric,baseline,HERB_TURMERIC,1.0,1.0,1.0,0.0,0.0,Highly Plausible. Strong target coverage with mechanistic coherence.
+Turmeric + Pippali,synergy,HERB_TURMERIC|HERB_PIPPALI,0.4088427220668531,1.0,0.02,0.0,0.0,Moderate Plausibility. Some shared mechanisms identified.
+Turmeric + Ginger,redundancy_check,HERB_TURMERIC|HERB_GINGER,0.6351371951219512,1.0,0.59,0.12,0.0,Moderate Plausibility. Some shared mechanisms identified.
+"Immunity Triad (Amla, Guduchi, Ashwagandha)",formulation,HERB_AMLA|HERB_GUDUCHI|HERB_ASHWAGANDHA,0.37725679585931454,1.0,0.07,0.01,0.05,Low Plausibility. Constituent herbs appear biologically disconnected or inert.
+Random Mix 1,random,HERB_NEEM|HERB_LICORICE,0.35000000000000003,1.0,0.0,0.0,0.05,Low Plausibility. Constituent herbs appear biologically disconnected or inert.
+Random Mix 2,random,HERB_BRAHMI|HERB_TULSI,0.0,0.0,0.0,0.0,0.1,Low Plausibility. Constituent herbs appear biologically disconnected or inert.

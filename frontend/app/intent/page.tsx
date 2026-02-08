@@ -16,7 +16,7 @@ export default function Intent() {
     };
 
     return (
-        <div>
+        <div className="container">
             <h2>Intent-Based Discovery</h2>
             <div className="card">
                 <label>Describe your goal (e.g., "Natural immunity and stress relief"):</label>

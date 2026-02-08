@@ -42,3 +42,44 @@ def check_validity(chem_recon):
     return {
         'valid_chem': 1.0 if valid_chem else 0.0
     }
+
+def compute_retrieval_metrics(y_true, y_pred_logits, k=10):
+    """
+    Computes Retrieval@K (Recall@K) for multi-label classification.
+    y_true: [batch, num_targets] (0 or 1)
+    y_pred_logits: [batch, num_targets] (logits)
+    """
+    # Get top k indices
+    _, topk_indices = torch.topk(y_pred_logits, k=k, dim=1)
+    
+    # Check if any true label is in top k
+    # Gather true labels at topk indices
+    # shape: [batch, k]
+    batch_size = y_true.size(0)
+    
+    hits = 0
+    for i in range(batch_size):
+        # Indices of true targets
+        true_indices = (y_true[i] == 1).nonzero(as_tuple=True)[0]
+        if len(true_indices) == 0:
+            continue
+            
+        # Check intersection
+        pred_indices = topk_indices[i]
+        
+        # Intersection
+        # We want to know if AT LEAST ONE true target was retrieved?
+        # Or Recall@K (fraction of true targets retrieved)?
+        # Usually for "Retrieval@K" in this context we mean "Hit@K" (is the relevant item there?)
+        # Since we have multiple targets, let's use Recall@K averaged
+        
+        retrieved_count = 0
+        for idx in pred_indices:
+            if idx in true_indices:
+                retrieved_count += 1
+        
+        recall = retrieved_count / len(true_indices)
+        hits += recall
+        
+    avg_recall = hits / batch_size
+    return {'recall_at_k': avg_recall}

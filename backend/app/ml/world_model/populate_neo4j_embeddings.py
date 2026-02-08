@@ -1,45 +1,59 @@
 import os
 import sys
+from tqdm import tqdm
 
 # Ensure backend module can be found
 sys.path.append(os.getcwd())
 
-from backend.app.ml.world_model.infer import WorldModelInference
+from backend.app.ml.world_model.infer_supervised import SupervisedInference
 from backend.app.services.neo4j_service import Neo4jService
 
 def main():
-    print("Initializing World Model Inference...")
+    print("Initializing Supervised Inference...")
     try:
-        # Config path assuming running from root
-        infer = WorldModelInference(config_path='backend/app/ml/world_model/config.yaml')
+        infer = SupervisedInference(config_path='backend/app/ml/world_model/config.yaml')
     except Exception as e:
-        print(f"Failed to load VAE: {e}")
+        print(f"Failed to load Model: {e}")
         return
 
     print("Connecting to Neo4j...")
     neo4j = Neo4jService()
     
-    print("Computing and Storing Embeddings...")
-    count = 0
+    print("Fetching Compounds without new embeddings...")
+    # Optionally force update all
+    q_fetch = "MATCH (c:Compound) WHERE c.smiles IS NOT NULL RETURN c.inchikey as k, c.smiles as s"
+    
+    compounds = []
     with neo4j.driver.session() as session:
-        # We process in batches if needed, but simple loop is fine for MVP
-        for i, inchikey in enumerate(infer.compound_ids):
-            embedding = infer.embeddings[i].tolist() # Convert numpy to list
+        result = session.run(q_fetch)
+        compounds = [record.data() for record in result]
+        
+    print(f"Found {len(compounds)} compounds to process.")
+    
+    batch_size = 100
+    
+    with neo4j.driver.session() as session:
+        for i in tqdm(range(0, len(compounds), batch_size)):
+            batch = compounds[i:i+batch_size]
+            smiles = [b['s'] for b in batch]
+            keys = [b['k'] for b in batch]
             
-            # Update query
-            q = """
-            MATCH (c:Compound {inchikey: $inchikey})
-            SET c.embedding = $embedding
-            RETURN count(c) as updated
-            """
-            res = session.run(q, inchikey=inchikey, embedding=embedding).single()
-            if res and res['updated'] > 0:
-                count += 1
+            embeddings = infer.encode(smiles)
             
-            if (i+1) % 100 == 0:
-                print(f"Processed {i+1}/{len(infer.compound_ids)} compounds...")
+            update_list = []
+            for k, emb in zip(keys, embeddings):
+                if emb is not None:
+                    update_list.append({'k': k, 'e': emb.tolist()})
+            
+            if update_list:
+                q_update = """
+                UNWIND $updates as row
+                MATCH (c:Compound {inchikey: row.k})
+                SET c.embedding_supervised = row.e
+                """
+                session.run(q_update, updates=update_list)
                 
-    print(f"Finished. Updated {count} compounds with embeddings in Neo4j.")
+    print("Done.")
     neo4j.close()
 
 if __name__ == "__main__":
