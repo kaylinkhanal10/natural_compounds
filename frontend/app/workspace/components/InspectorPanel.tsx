@@ -22,7 +22,7 @@ export const InspectorPanel = ({ selectedNode, modifiers, onModifierChange, isAd
     // Fetch compounds when a Herb is selected (Always fetch for visibility)
     useEffect(() => {
         if (type === 'herb' && data.id) {
-            axios.get(`http://localhost:8000/herbs/${data.id}`)
+            axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/herbs/${data.id}`)
                 .then(res => {
                     // Use extended_compounds if available, otherwise fallback or empty
                     const comps = res.data.extended_compounds || [];

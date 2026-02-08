@@ -8,7 +8,7 @@ export default function HerbList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/herbs/')
+        axios.get((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/herbs/')
             .then(res => setHerbs(res.data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

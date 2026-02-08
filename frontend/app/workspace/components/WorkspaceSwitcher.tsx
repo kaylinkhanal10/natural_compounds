@@ -18,7 +18,7 @@ export function WorkspaceSwitcher({ currentWorkspaceId }: WorkspaceSwitcherProps
     const router = useRouter();
 
     useEffect(() => {
-        axios.get('http://localhost:8000/workspaces/')
+        axios.get((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/workspaces/')
             .then(res => setWorkspaces(res.data))
             .catch(err => console.error("Failed to fetch workspaces", err));
     }, []);
@@ -28,7 +28,7 @@ export function WorkspaceSwitcher({ currentWorkspaceId }: WorkspaceSwitcherProps
         if (!name) return;
 
         try {
-            const res = await axios.post('http://localhost:8000/workspaces/', {
+            const res = await axios.post((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/workspaces/', {
                 name,
                 description: "Created via Switcher"
             });

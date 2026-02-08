@@ -8,7 +8,7 @@ export default function DiseaseList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/diseases/')
+        axios.get((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/diseases/')
             .then(res => setDiseases(res.data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

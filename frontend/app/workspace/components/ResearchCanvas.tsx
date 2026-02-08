@@ -85,7 +85,7 @@ export default function ResearchCanvas({ workspaceId }: ResearchCanvasProps) {
         const delayDebounceFn = setTimeout(async () => {
             if (searchTerm.length > 1) {
                 try {
-                    const res = await axios.get(`http://localhost:8000/search/global?q=${searchTerm}`);
+                    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/global?q=${searchTerm}`);
                     setSearchResults(res.data);
                 } catch (e) {
                     console.error("Search failed", e);
@@ -111,24 +111,24 @@ export default function ResearchCanvas({ workspaceId }: ResearchCanvasProps) {
                 // HIERARCHY LOGIC
                 // 1. If Disease -> Load Children (Targets)
                 if (selectedContext.type === 'Disease') {
-                    const res = await axios.get(`http://localhost:8000/search/context/${selectedContext.type}/${selectedContext.id}/children`);
+                    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/context/${selectedContext.type}/${selectedContext.id}/children`);
                     if (res.data.length > 0) {
                         setChildNodes(res.data);
                         setInventoryMode('children');
                     } else {
                         // Fallback: try loading compounds directly?
-                        const resComp = await axios.get(`http://localhost:8000/search/context/${selectedContext.type}/${selectedContext.id}`);
+                        const resComp = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/context/${selectedContext.type}/${selectedContext.id}`);
                         setCompounds(resComp.data);
                         setInventoryMode('compounds');
                     }
                 }
                 // 2. If Target or Herb -> Load Compounds (Leaf)
                 else {
-                    let url = `http://localhost:8000/search/context/${selectedContext.type}/${selectedContext.id}`;
+                    let url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/context/${selectedContext.type}/${selectedContext.id}`;
 
                     // Fix for Herb ID
                     if (selectedContext.type === 'Herb') {
-                        url = `http://localhost:8000/search/context/Herb/${selectedContext.id}`;
+                        url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/context/Herb/${selectedContext.id}`;
                     }
 
                     const res = await axios.get(url);
@@ -149,7 +149,7 @@ export default function ResearchCanvas({ workspaceId }: ResearchCanvasProps) {
         setLoadingInventory(true);
         try {
             // Assume we are drilling down to compounds now (Target -> Compounds)
-            let url = `http://localhost:8000/search/context/${child.type}/${child.id}`;
+            let url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/context/${child.type}/${child.id}`;
             const res = await axios.get(url);
             setCompounds(res.data);
             setInventoryMode('compounds');
@@ -283,7 +283,7 @@ export default function ResearchCanvas({ workspaceId }: ResearchCanvasProps) {
             const groups: any = { "Formula": currentCompounds };
 
             // Expected Response: { plausibility_score, metrics, decision, ... }
-            const res = await axios.post('http://localhost:8000/combine/', { groups });
+            const res = await axios.post((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/combine/', { groups });
             setResult(res.data);
         } catch (err) {
             console.error("Analysis Failed:", err);

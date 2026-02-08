@@ -8,7 +8,7 @@ export default function Intent() {
 
     const search = async () => {
         try {
-            const res = await axios.post('http://localhost:8000/intent/', { text });
+            const res = await axios.post((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/intent/', { text });
             setResult(res.data);
         } catch (err) {
             console.error(err);

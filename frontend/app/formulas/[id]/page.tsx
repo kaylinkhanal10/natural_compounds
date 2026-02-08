@@ -8,7 +8,7 @@ export default function FormulaDetail({ params }: { params: { id: string } }) {
     const name = decodeURIComponent(params.id);
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/formulas/${name}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/formulas/${name}`)
             .then(res => setData(res.data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

@@ -8,7 +8,7 @@ export default function FormulaList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/formulas/')
+        axios.get((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/formulas/')
             .then(res => setFormulas(res.data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

@@ -27,7 +27,7 @@ export const EntityPalette = ({ isAdvanced, orientation = 'vertical' }: PaletteP
 
         const delayDebounceFn = setTimeout(() => {
             import('axios').then(axios => {
-                axios.default.get(`http://localhost:8000/search/global?q=${searchTerm}`)
+                axios.default.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/search/global?q=${searchTerm}`)
                     .then(res => {
                         const items = res.data.map((item: any) => ({
                             type: item.type.toLowerCase(),

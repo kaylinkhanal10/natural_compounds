@@ -7,7 +7,7 @@ export default function HerbDetail({ params }: { params: { id: string } }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/herbs/${params.id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/herbs/${params.id}`)
             .then(res => setData(res.data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));
