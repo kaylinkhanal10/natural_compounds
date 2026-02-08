@@ -1,11 +1,17 @@
-from ..ml.world_model.infer import WorldModelInference
+try:
+    from ..ml.world_model.infer import WorldModelInference
+except ImportError:
+    WorldModelInference = None
 
 class IntentParser:
     def __init__(self):
         # Initialize VAE Inference Engine
         try:
-            self.vae = WorldModelInference()
-            print("IntentParser: VAE World Model loaded successfully.")
+            if WorldModelInference:
+                self.vae = WorldModelInference()
+                print("IntentParser: VAE World Model loaded successfully.")
+            else:
+                raise ImportError("WorldModelInference unavailable")
         except Exception as e:
             print(f"IntentParser: Failed to load VAE World Model. Error: {e}")
             self.vae = None
